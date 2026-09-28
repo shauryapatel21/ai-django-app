@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  /* Authentic Apple Liquid Glass System */
+  .apple-glass-heavy {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(10, 15, 29, 0.75);
+    backdrop-filter: blur(35px) saturate(200%);
+    -webkit-backdrop-filter: blur(35px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7), inset 0 1.2px 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .apple-glass-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 100%), rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(25px) saturate(190%);
+    -webkit-backdrop-filter: blur(25px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.45), inset 0 1px 1px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  .apple-glass-pill {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+  }
+</style>
+
+<div class="max-w-4xl mx-auto space-y-7 py-4 sm:py-6 px-1 sm:px-4">
+  
+  <!-- Alert Messages -->
+  {% if msg %}
+    <div class="apple-glass-heavy rounded-2xl p-4 flex items-center gap-3 border-cyan-400/40 text-cyan-200 text-xs sm:text-sm font-mono shadow-lg">
+      <span class="text-base">⚡</span>
+      <span>{{ msg }}</span>
+    </div>
+  {% endif %}
+
+  <!-- Chapter Header -->
+  <div class="flex flex-wrap justify-between items-center gap-3 border-b border-white/10 pb-4">
+    <div>
+      <span class="text-[11px] font-mono text-cyan-400 font-bold uppercase tracking-widest">
+        Chapter {{ chapter.chapter_number }} of 8
+      </span>
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-white mt-1 tracking-tight">
+        {{ chapter.title }}
+      </h1>
+    </div>
+    {% if progress.is_completed %}
+      <span class="apple-glass-pill text-emerald-300 text-xs font-mono px-3.5 py-1.5 rounded-full font-bold flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Completed ✓
+      </span>
+    {% else %}
+      <span class="apple-glass-pill text-amber-300 text-xs font-mono px-3.5 py-1.5 rounded-full flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> In Progress
+      </span>
+    {% endif %}
+  </div>
+
+  <!-- Video Lecture Card -->
+  <div class="apple-glass-heavy rounded-3xl overflow-hidden shadow-2xl">
+    <div class="w-full aspect-video bg-black flex items-center justify-center">
+      <iframe class="w-full h-full" src="{{ chapter.video_url }}" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Theory & Documentation -->
+  <div class="apple-glass-card p-6 sm:p-8 rounded-3xl space-y-4">
+    <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+      <span>📖</span> Chapter Theory & Notes
+    </h2>
+    <div class="text-slate-300 leading-relaxed text-xs sm:text-sm select-none">
+      {{ chapter.theory_content|linebreaks }}
+    </div>
+  </div>
+
+  <!-- Chapter Quiz -->
+  <div class="apple-glass-heavy p-6 sm:p-8 rounded-3xl space-y-6">
+    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+      <div>
+        <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold">Assessment</span>
+        <h2 class="text-lg sm:text-xl font-bold text-white mt-0.5">Chapter Quiz (3 Questions)</h2>
+      </div>
+      {% if progress.quiz_passed %}
+        <span class="text-xs font-mono text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
+          ✓ Passed
+        </span>
+      {% endif %}
+    </div>
+
+    <form method="POST" class="space-y-6">
+      {% csrf_token %}
+      {% for q in questions %}
+        <div class="bg-slate-950/60 border border-white/5 p-4 sm:p-5 rounded-2xl space-y-3">
+          <p class="font-semibold text-white text-xs sm:text-sm leading-snug">
+            <span class="text-cyan-400 font-mono">{{ forloop.counter }}.</span> {{ q.question_text }}
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs font-medium text-slate-300">
+            <label class="flex items-center space-x-2.5 bg-slate-900/60 border border-white/5 hover:border-cyan-400/40 p-3 rounded-xl cursor-pointer transition">
+              <input type="radio" name="q_{{ q.id }}" value="A" class="accent-cyan-400" required>
+              <span>{{ q.option_a }}</span>
+            </label>
+            <label class="flex items-center space-x-2.5 bg-slate-900/60 border border-white/5 hover:border-cyan-400/40 p-3 rounded-xl cursor-pointer transition">
+              <input type="radio" name="q_{{ q.id }}" value="B" class="accent-cyan-400">
+              <span>{{ q.option_b }}</span>
+            </label>
+            <label class="flex items-center space-x-2.5 bg-slate-900/60 border border-white/5 hover:border-cyan-400/40 p-3 rounded-xl cursor-pointer transition">
+              <input type="radio" name="q_{{ q.id }}" value="C" class="accent-cyan-400">
+              <span>{{ q.option_c }}</span>
+            </label>
+            <label class="flex items-center space-x-2.5 bg-slate-900/60 border border-white/5 hover:border-cyan-400/40 p-3 rounded-xl cursor-pointer transition">
+              <input type="radio" name="q_{{ q.id }}" value="D" class="accent-cyan-400">
+              <span>{{ q.option_d }}</span>
+            </label>
+          </div>
+        </div>
+      {% endfor %}
+      <button type="submit" name="submit_quiz" class="bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 text-slate-950 font-extrabold px-6 py-2.5 rounded-full text-xs sm:text-sm shadow-md shadow-cyan-500/20 transition transform active:scale-95 cursor-pointer">
+        Submit Quiz Answers →
+      </button>
+    </form>
+  </div>
+
+  <!-- Practical Homework Task -->
+  <div class="apple-glass-heavy p-6 sm:p-8 rounded-3xl space-y-4">
+    <div class="border-b border-white/10 pb-3">
+      <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold">Practical Lab</span>
+      <h2 class="text-lg sm:text-xl font-bold text-white mt-0.5">🛠️ Practical Homework Task</h2>
+    </div>
+
+    <div class="bg-slate-950/60 border border-white/5 p-4 rounded-2xl text-slate-300 text-xs sm:text-sm leading-relaxed">
+      {{ chapter.homework_prompt|linebreaks }}
+    </div>
+
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
+      <textarea 
+        name="homework_solution" 
+        rows="4" 
+        class="w-full bg-slate-950/70 border border-white/10 rounded-2xl p-4 text-white text-xs sm:text-sm font-mono focus:outline-none focus:border-cyan-400 transition" 
+        placeholder="Paste your response, code snippet, or repository URL..." 
+        required>{{ progress.homework_solution|default:"" }}</textarea>
+      
+      <button type="submit" name="submit_homework" class="apple-glass-pill hover:bg-white/10 text-cyan-300 font-bold px-6 py-2.5 rounded-full text-xs sm:text-sm transition active:scale-95 cursor-pointer">
+        Submit Homework ⚡
+      </button>
+    </form>
+  </div>
+
+  <!-- Navigation Footers -->
+  <div class="flex items-center justify-between pt-6 border-t border-white/10">
+    {% if chapter.chapter_number > 1 %}
+      <a href="{% url 'chapter_view' chapter.chapter_number|add:'-1' %}" class="apple-glass-pill hover:bg-white/10 text-slate-300 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition">
+        ← Previous
+      </a>
+    {% else %}
+      <div></div>
+    {% endif %}
+
+    {% if chapter.chapter_number < 8 %}
+      <a href="{% url 'chapter_view' chapter.chapter_number|add:'1' %}" class="bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 text-slate-950 font-extrabold px-6 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-cyan-500/20 transition">
+        Next Chapter →
+      </a>
+    {% else %}
+      {% if all_completed %}
+        <a href="{% url 'generate_certificate' %}" target="_blank" class="bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 text-slate-950 font-extrabold px-6 py-3 rounded-xl text-xs sm:text-sm shadow-lg shadow-emerald-500/30 transition">
+          Claim Official Certificate 🎓
+        </a>
+      {% else %}
+        <span class="apple-glass-pill text-slate-400 text-xs px-4 py-2 rounded-xl font-mono">
+          Complete all chapters to unlock certificate 🔒
+        </span>
+      {% endif %}
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

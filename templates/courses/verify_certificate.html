@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .apple-glass-heavy {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(10, 15, 29, 0.75);
+    backdrop-filter: blur(35px) saturate(200%);
+    -webkit-backdrop-filter: blur(35px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7), inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .apple-glass-pill {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+  }
+</style>
+
+<div class="max-w-3xl mx-auto py-10 px-4 space-y-8">
+
+  <!-- Verification Card -->
+  <div class="apple-glass-heavy rounded-3xl p-6 sm:p-10 text-center space-y-6 relative overflow-hidden">
+    
+    <!-- Top Verified Shield Animation -->
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-400 text-3xl shadow-inner mx-auto">
+      ✓
+    </div>
+
+    <div class="space-y-1">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full apple-glass-pill text-[10px] font-mono uppercase tracking-widest text-emerald-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+        Authentic Credential Verified
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white pt-2">
+        Official Certificate of Completion
+      </h1>
+      <p class="text-slate-400 text-xs sm:text-sm">
+        This digital record certifies the recipient has demonstrated complete mastery across all required learning modules.
+      </p>
+    </div>
+
+    <!-- Credential Details Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left pt-4 border-t border-white/10 font-mono text-xs">
+      <div class="bg-slate-950/60 p-4 rounded-2xl border border-white/5 space-y-1">
+        <span class="text-slate-500 uppercase text-[10px] block">Student Name</span>
+        <span class="text-white font-bold text-sm">{{ student_name }}</span>
+      </div>
+
+      <div class="bg-slate-950/60 p-4 rounded-2xl border border-white/5 space-y-1">
+        <span class="text-slate-500 uppercase text-[10px] block">Course Program</span>
+        <span class="text-cyan-300 font-bold text-sm">{{ course.title|default:"AI Tools & Autonomous Systems Mastery" }}</span>
+      </div>
+
+      <div class="bg-slate-950/60 p-4 rounded-2xl border border-white/5 space-y-1">
+        <span class="text-slate-500 uppercase text-[10px] block">Verification ID</span>
+        <span class="text-slate-200 font-bold tracking-wider">{{ cert.certificate_id }}</span>
+      </div>
+
+      <div class="bg-slate-950/60 p-4 rounded-2xl border border-white/5 space-y-1">
+        <span class="text-slate-500 uppercase text-[10px] block">Issue Timestamp</span>
+        <span class="text-slate-200 font-bold">{{ cert.issued_at|date:"F d, Y" }}</span>
+      </div>
+    </div>
+
+    <!-- Public Security Confirmation -->
+    <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+      <span>Issuing Authority: <strong class="text-slate-200 font-semibold">AI Tools Academy</strong></span>
+      <span class="text-emerald-400 flex items-center gap-1 font-mono">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Cryptographically Signed
+      </span>
+    </div>
+
+  </div>
+
+  <!-- Callout / Back to Home -->
+  <div class="text-center">
+    <a href="/" class="text-xs text-slate-400 hover:text-cyan-400 font-mono transition">
+      ← Return to Main Academy Portal
+    </a>
+  </div>
+
+</div>
+{% endblock %}

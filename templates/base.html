@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <!-- Dynamic Device Viewport (Fixes mobile width & overflow) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>AI Tools Academy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Strict viewport containment to stop side-scrolling */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* iOS Frosted Glass for Navbar & Footer */
+    .ios-nav-glass {
+      background: rgba(10, 15, 29, 0.75);
+      backdrop-filter: blur(25px) saturate(190%);
+      -webkit-backdrop-filter: blur(25px) saturate(190%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .ios-mobile-drawer {
+      background: rgba(10, 15, 29, 0.95);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+  </style>
+</head>
+<body class="bg-[#070b14] text-slate-100 min-h-screen flex flex-col font-sans w-full overflow-x-hidden selection:bg-teal-400 selection:text-black">
+  
+  <!-- Navigation Bar -->
+  <nav class="ios-nav-glass sticky top-0 z-50 px-4 sm:px-8 py-3.5 transition-all duration-300">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      
+      <!-- Brand Logo -->
+      <a href="/" class="text-lg sm:text-xl font-extrabold bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent flex items-center gap-1.5 shrink-0">
+        <span class="text-cyan-400">⚡</span> AI Tools Academy
+      </a>
+      
+      <!-- Desktop Navigation Links (Visible on Tablet/Laptop) -->
+      <div class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-300">
+        <a href="/" class="hover:text-cyan-400 transition-colors">Course</a>
+        <a href="/compiler/" class="hover:text-cyan-400 transition-colors">Python Sandbox</a>
+        <a href="/events/" class="hover:text-cyan-400 transition-colors">Hackathons & Events</a>
+        
+        <!-- AUTHENTICATION (Desktop) -->
+        {% if user.is_authenticated %}
+          <div class="flex items-center space-x-3 border-l border-slate-700/80 pl-5">
+            <span class="text-slate-300 font-medium text-xs font-mono">Hi, {{ user.username }}</span>
+            <form method="POST" action="{% url 'logout' %}" class="inline">
+              {% csrf_token %}
+              <button type="submit" class="text-xs bg-rose-950/60 hover:bg-rose-900 border border-rose-700/50 text-rose-200 px-3 py-1.5 rounded-lg transition shadow-sm cursor-pointer">
+                Logout
+              </button>
+            </form>
+          </div>
+        {% else %}
+          <div class="flex items-center space-x-3 border-l border-slate-700/80 pl-5">
+            <a href="{% url 'login' %}" class="text-slate-300 hover:text-white transition px-2 py-1">Login</a>
+            <a href="{% url 'register' %}" class="bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 text-slate-950 px-4 py-1.5 rounded-full font-bold shadow-md shadow-cyan-500/20 transition">Sign Up</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Mobile Hamburger Button (Visible only on phones) -->
+      <div class="flex items-center md:hidden gap-2">
+        {% if not user.is_authenticated %}
+          <a href="{% url 'register' %}" class="text-xs bg-cyan-400 text-slate-950 font-bold px-3 py-1.5 rounded-full">Sign Up</a>
+        {% endif %}
+        
+        <button id="mobileMenuBtn" type="button" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 focus:outline-none transition" aria-label="Toggle Menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path id="menuIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Dropdown Drawer -->
+    <div id="mobileMenu" class="hidden md:hidden ios-mobile-drawer border-t border-slate-800/80 px-4 py-5 mt-3 rounded-2xl space-y-4">
+      <div class="flex flex-col space-y-3 text-sm font-semibold text-slate-200">
+        <a href="/" class="hover:text-cyan-400 py-1 transition-colors">Course</a>
+        <a href="/compiler/" class="hover:text-cyan-400 py-1 transition-colors">Python Sandbox</a>
+        <a href="/events/" class="hover:text-cyan-400 py-1 transition-colors">Hackathons & Events</a>
+      </div>
+
+      <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+        {% if user.is_authenticated %}
+          <span class="text-slate-300 text-xs font-mono">Signed in as <strong class="text-cyan-300">{{ user.username }}</strong></span>
+          <form method="POST" action="{% url 'logout' %}" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="text-xs bg-rose-950/60 hover:bg-rose-900 border border-rose-700/50 text-rose-200 px-3 py-1.5 rounded-lg transition">
+              Logout
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="text-sm font-semibold text-slate-300 hover:text-white">Login</a>
+          <a href="{% url 'register' %}" class="text-xs font-extrabold bg-cyan-400 text-slate-950 px-4 py-2 rounded-full">Get Started</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="w-full max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8 flex-grow overflow-x-hidden">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 bg-[#070b14]">
+    © 2026 AI Tools Academy. All rights reserved.
+  </footer>
+
+  <!-- Script to toggle mobile hamburger menu -->
+  <script>
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    if (mobileBtn && mobileMenu) {
+      mobileBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+  </script>
+</body>
+</html>

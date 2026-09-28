@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+  <h1 class="text-3xl font-bold text-white">Interactive Python Sandbox</h1>
+  <p class="text-slate-400 text-sm">Client-side execution powered by Pyodide.</p>
+  <textarea id="code" rows="8" class="w-full bg-slate-950 font-mono text-sm border border-slate-800 rounded-xl p-4 text-emerald-400">print("Hello from AI Platform!")</textarea>
+  <button onclick="executeCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold">▶ Run Code</button>
+  <div class="bg-black border border-slate-800 rounded-xl p-4">
+    <pre id="terminal" class="font-mono text-slate-200 text-sm whitespace-pre-wrap">Terminal ready...</pre>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<script>
+  let py;
+  loadPyodide().then(p => { py = p; document.getElementById("terminal").innerText = "Python compiler loaded!"; });
+  async function executeCode() {
+    const term = document.getElementById("terminal");
+    term.innerText = "Running...";
+    try {
+      py.runPython(`import sys, io\nsys.stdout = io.StringIO()`);
+      py.runPython(document.getElementById("code").value);
+      term.innerText = py.runPython("sys.stdout.getvalue()") || "[Executed with no output]";
+    } catch(err) {
+      term.innerText = err;
+    }
+  }
+</script>
+{% endblock %}
