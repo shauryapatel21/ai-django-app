@@ -132,3 +132,5 @@ LOGOUT_REDIRECT_URL = '/'
 # Razorpay Test Credentials (Replace with your actual keys from dashboard.razorpay.com)
 RAZORPAY_KEY_ID = 'rzp_test_YourKeyID'
 RAZORPAY_KEY_SECRET = 'YourKeySecret'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
